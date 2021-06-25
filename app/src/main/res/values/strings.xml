@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">My Recipes</string>
+
+    <string name="recipes_fragment">Recipes</string>
+    <string name="favorite_recipes_fragment">Favorite Recipes</string>
+</resources>
