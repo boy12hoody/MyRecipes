@@ -1,4 +1,4 @@
-package uz.boywonder.myrecipes
+package uz.boywonder.myrecipes.ui.fragments.favorites
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

@@ -3,4 +3,5 @@
 
     <string name="recipes_fragment">Recipes</string>
     <string name="favorite_recipes_fragment">Favorite Recipes</string>
+    <string name="filter">Filter</string>
 </resources>

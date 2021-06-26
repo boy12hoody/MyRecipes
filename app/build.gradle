@@ -62,8 +62,8 @@ dependencies {
     androidTestImplementation "androidx.room:room-testing:2.3.0"
 
     // Data binding
-//    kapt "com.android.databinding:compiler:3.2.0-alpha10"
-//    kapt "androidx.databinding:databinding-common:4.2.1"
+    // kapt "com.android.databinding:compiler:3.2.0-alpha10"
+    // kapt "androidx.databinding:databinding-common:4.2.1"
 
     // View binding Delegate
     implementation 'com.github.yogacp:android-viewbinding:1.0.3'
@@ -96,7 +96,11 @@ dependencies {
     implementation 'io.coil-kt:coil:1.2.2'
 
     // Gson
-    implementation 'com.google.code.gson:gson:2.8.7'
+    // implementation 'com.google.code.gson:gson:2.8.7'
+
+    // Moshi + Codegen
+    implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.12.0")
 
     // Shimmer
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
