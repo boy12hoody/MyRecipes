@@ -1,4 +1,4 @@
-package uz.boywonder.myrecipes
+package uz.boywonder.myrecipes.util
 
 class Constants {
 
