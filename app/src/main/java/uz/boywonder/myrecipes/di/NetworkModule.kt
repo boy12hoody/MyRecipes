@@ -7,8 +7,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import uz.boywonder.myrecipes.util.Constants.Companion.BASE_URL
 import uz.boywonder.myrecipes.data.network.RecipesApi
+import uz.boywonder.myrecipes.util.Constants.Companion.BASE_URL
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
