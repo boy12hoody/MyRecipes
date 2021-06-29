@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -16,7 +17,7 @@ import uz.boywonder.myrecipes.util.NetworkResult
 import javax.inject.Inject
 
 @HiltViewModel
-class RecipeViewModel @Inject constructor(
+class RecipesViewModel @Inject constructor(
     private val repository: Repository,
     application: Application
 ) : AndroidViewModel(application) {
@@ -43,6 +44,7 @@ class RecipeViewModel @Inject constructor(
 
             } catch (e: Exception) {
                 recipeResponse.value = NetworkResult.Error("Recipes not found.")
+                Log.e("RecipesViewModel", e.message.toString())
             }
 
         } else {
