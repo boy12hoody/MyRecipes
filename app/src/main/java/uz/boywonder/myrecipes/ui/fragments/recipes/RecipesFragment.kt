@@ -9,16 +9,17 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import uz.boywonder.myrecipes.R
-import uz.boywonder.myrecipes.RecipesViewModel
+import uz.boywonder.myrecipes.viewmodels.MainViewModel
 import uz.boywonder.myrecipes.adapters.RecipesAdapter
 import uz.boywonder.myrecipes.databinding.FragmentRecipesBinding
-import uz.boywonder.myrecipes.util.Constants.Companion.API_KEY
 import uz.boywonder.myrecipes.util.NetworkResult
+import uz.boywonder.myrecipes.viewmodels.RecipesViewModel
 
 @AndroidEntryPoint
 class RecipesFragment : Fragment(R.layout.fragment_recipes) {
 
-    private val viewModel: RecipesViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels()
+    private val recipesViewModel: RecipesViewModel by viewModels()
     private val binding: FragmentRecipesBinding by viewBinding()
     private val recipesAdapter by lazy { RecipesAdapter() }
 
@@ -31,8 +32,8 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes) {
     }
 
     private fun requestApiData() {
-        viewModel.getRecipes(applyQueries())
-        viewModel.recipeResponse.observe(viewLifecycleOwner) { response ->
+        mainViewModel.getRecipes(recipesViewModel.applyQueries())
+        mainViewModel.recipeResponse.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is NetworkResult.Success -> {
                     hideShimmerEffect()
@@ -49,18 +50,6 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes) {
         }
     }
 
-    private fun applyQueries(): HashMap<String, String> {
-        val queries = HashMap<String, String>()
-
-        queries["number"] = "50"
-        queries["apiKey"] = API_KEY
-        queries["type"] = "breakfast"
-        queries["diet"] = "vegan"
-        queries["addRecipeInformation"] = "true"
-        queries["fillIngredients"] = "true"
-
-        return queries
-    }
 
     private fun showShimmerEffect() {
         binding.shimmerFrameLayout.startShimmer()

@@ -1,4 +1,4 @@
-package uz.boywonder.myrecipes
+package uz.boywonder.myrecipes.viewmodels
 
 import android.app.Application
 import android.content.Context
@@ -17,7 +17,7 @@ import uz.boywonder.myrecipes.util.NetworkResult
 import javax.inject.Inject
 
 @HiltViewModel
-class RecipesViewModel @Inject constructor(
+class MainViewModel @Inject constructor(
     private val repository: Repository,
     application: Application
 ) : AndroidViewModel(application) {
