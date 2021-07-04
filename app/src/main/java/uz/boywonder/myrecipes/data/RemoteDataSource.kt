@@ -2,13 +2,13 @@ package uz.boywonder.myrecipes.data
 
 import retrofit2.Response
 import uz.boywonder.myrecipes.data.network.RecipesApi
-import uz.boywonder.myrecipes.models.Recipe
+import uz.boywonder.myrecipes.models.Recipes
 import javax.inject.Inject
 
 class RemoteDataSource @Inject constructor(
     private val recipesApi: RecipesApi
 ){
-    suspend fun getRecipes(queries: Map<String, String>) : Response<Recipe>{
+    suspend fun getRecipes(queries: Map<String, String>) : Response<Recipes>{
         return recipesApi.getRepices(queries)
     }
 }

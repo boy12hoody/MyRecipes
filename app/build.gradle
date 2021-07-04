@@ -41,17 +41,17 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation 'androidx.core:core-ktx:1.5.0'
+    implementation 'androidx.core:core-ktx:1.6.0'
     implementation 'androidx.appcompat:appcompat:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     // Material Components
-    implementation 'com.google.android.material:material:1.3.0'
+    implementation 'com.google.android.material:material:1.4.0'
 
     // Navigation Component
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
@@ -63,15 +63,11 @@ dependencies {
     implementation "androidx.room:room-ktx:2.3.0"
     androidTestImplementation "androidx.room:room-testing:2.3.0"
 
-    // Data binding
-    // kapt "com.android.databinding:compiler:3.2.0-alpha10"
-    // kapt "androidx.databinding:databinding-common:4.2.1"
-
     // View binding Delegate
     implementation 'com.github.yogacp:android-viewbinding:1.0.3'
 
     // DataStore
-    implementation "androidx.datastore:datastore-preferences:1.0.0-beta02"
+    implementation 'androidx.datastore:datastore-preferences:1.0.0-rc01'
 
     // Recyclerview
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
@@ -96,9 +92,6 @@ dependencies {
 
     // Image Loading library Coil
     implementation 'io.coil-kt:coil:1.2.2'
-
-    // Gson
-    // implementation 'com.google.code.gson:gson:2.8.7'
 
     // Moshi + Codegen
     implementation("com.squareup.moshi:moshi-kotlin:1.12.0")

@@ -1,6 +1,5 @@
 package uz.boywonder.myrecipes.adapters
 
-import android.graphics.ColorFilter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -9,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import uz.boywonder.myrecipes.R
 import uz.boywonder.myrecipes.databinding.RecipesRowLayoutBinding
-import uz.boywonder.myrecipes.models.Recipe
+import uz.boywonder.myrecipes.models.Recipes
 import uz.boywonder.myrecipes.models.Result
 import uz.boywonder.myrecipes.util.RecipesDiffUtil
 
@@ -31,6 +30,7 @@ class RecipesAdapter : RecyclerView.Adapter<RecipesAdapter.MyViewHolder>() {
                 clockTextView.text = result.readyInMinutes.toString()
                 recipeImageView.load(result.image) {
                     crossfade(600)
+                    error(R.drawable.ic_error_image)
                 }
 
                 if (result.vegan) {
@@ -58,7 +58,7 @@ class RecipesAdapter : RecyclerView.Adapter<RecipesAdapter.MyViewHolder>() {
     }
 
     // To check the updated data with older one to improve performance and accuracy of the app
-    fun setNewData(newData: Recipe) {
+    fun setNewData(newData: Recipes) {
         val diffUtil = RecipesDiffUtil(recipes, newData.results)
         val diffUtilResult = DiffUtil.calculateDiff(diffUtil)
         recipes = newData.results

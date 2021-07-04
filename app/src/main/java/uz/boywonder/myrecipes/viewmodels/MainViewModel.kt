@@ -5,14 +5,14 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import uz.boywonder.myrecipes.data.Repository
-import uz.boywonder.myrecipes.models.Recipe
+import uz.boywonder.myrecipes.data.database.RecipesEntity
+import uz.boywonder.myrecipes.models.Recipes
 import uz.boywonder.myrecipes.util.NetworkResult
 import javax.inject.Inject
 
@@ -22,8 +22,17 @@ class MainViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application) {
 
+    /* ROOM DATABASE */
+    // read local database for recipes list
+    var readRecipes: LiveData<List<RecipesEntity>> = repository.local.readDatabase().asLiveData()
+
+    private fun insertRecipes(recipesEntity: RecipesEntity) = viewModelScope.launch(Dispatchers.IO) {
+        repository.local.insertRecipes(recipesEntity)
+    }
+
+    /* RETROFIT */
     // response data in the form of LiveData
-    var recipeResponse: MutableLiveData<NetworkResult<Recipe>> = MutableLiveData()
+    var recipesResponse: MutableLiveData<NetworkResult<Recipes>> = MutableLiveData()
 
     fun getRecipes(queries: Map<String, String>) = viewModelScope.launch {
         getRecipesSafeCall(queries)
@@ -33,27 +42,38 @@ class MainViewModel @Inject constructor(
     private suspend fun getRecipesSafeCall(queries: Map<String, String>) {
 
         // as soon as getRecipes fun is called, the response will be in Loading state.
-        recipeResponse.value = NetworkResult.Loading()
+        recipesResponse.value = NetworkResult.Loading()
 
         // 1-step is checking connection
         if (hasInternetConnection()) {
             try {
                 // 2-step is getting response and handling it to result values check through handleRecipeResult()
                 val response = repository.remote.getRecipes(queries)
-                recipeResponse.value = handleRecipeResult(response)
+                recipesResponse.value = handleRecipeResponse(response)
+
+                // 3-step is caching the response to local database
+                val recipes = recipesResponse.value!!.data
+                if (recipes != null) {
+                    offlineCacheRecipes(recipes)
+                }
 
             } catch (e: Exception) {
-                recipeResponse.value = NetworkResult.Error("Recipes not found.")
+                recipesResponse.value = NetworkResult.Error("Recipes not found.")
                 Log.e("RecipesViewModel", e.message.toString())
             }
 
         } else {
-            recipeResponse.value = NetworkResult.Error("No Internet Connection.")
+            recipesResponse.value = NetworkResult.Error("No Internet Connection.")
         }
     }
 
+    private fun offlineCacheRecipes(recipes: Recipes) {
+        val recipesEntity = RecipesEntity(recipes)
+        insertRecipes(recipesEntity)
+    }
+
     // 3-step is handling all response values and return the result back to recipeResponse.value
-    private fun handleRecipeResult(response: Response<Recipe>): NetworkResult<Recipe> {
+    private fun handleRecipeResponse(response: Response<Recipes>): NetworkResult<Recipes> {
         when {
             response.message().toString().contains("timeout") -> {
                 return NetworkResult.Error("Timeout.")

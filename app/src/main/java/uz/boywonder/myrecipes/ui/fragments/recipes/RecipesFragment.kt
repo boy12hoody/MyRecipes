@@ -1,18 +1,23 @@
 package uz.boywonder.myrecipes.ui.fragments.recipes
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.View
 import android.viewbinding.library.fragment.viewBinding
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import uz.boywonder.myrecipes.R
-import uz.boywonder.myrecipes.viewmodels.MainViewModel
 import uz.boywonder.myrecipes.adapters.RecipesAdapter
+import uz.boywonder.myrecipes.data.database.RecipesEntity
 import uz.boywonder.myrecipes.databinding.FragmentRecipesBinding
+import uz.boywonder.myrecipes.models.Recipes
 import uz.boywonder.myrecipes.util.NetworkResult
+import uz.boywonder.myrecipes.util.observeOnce
+import uz.boywonder.myrecipes.viewmodels.MainViewModel
 import uz.boywonder.myrecipes.viewmodels.RecipesViewModel
 
 @AndroidEntryPoint
@@ -27,13 +32,31 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes) {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
-        requestApiData()
+        readDatabase()
 
     }
 
+    /* Because the query is hardcoded for now, it is ok to show the last cached data.
+    TODO subject to change once query search is introduced */
+    private fun readDatabase() {
+        lifecycleScope.launchWhenStarted {
+            mainViewModel.readRecipes.observeOnce(viewLifecycleOwner) { database ->
+                if (database.isNotEmpty()) {
+                    Log.d("RecipesFragment", "readDatabase() Called")
+                    recipesAdapter.setNewData(database.first().recipes)
+                    hideShimmerEffect()
+                } else {
+                    requestApiData()
+                }
+            }
+        }
+    }
+
+    // Requesting Data from Api, handles shimmer effect state as well
     private fun requestApiData() {
+        Log.d("RecipesFragment", "requestApiData() Called")
         mainViewModel.getRecipes(recipesViewModel.applyQueries())
-        mainViewModel.recipeResponse.observe(viewLifecycleOwner) { response ->
+        mainViewModel.recipesResponse.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is NetworkResult.Success -> {
                     hideShimmerEffect()
@@ -41,6 +64,7 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes) {
                 }
                 is NetworkResult.Error -> {
                     hideShimmerEffect()
+                    loadDataFromCache(response)
                     Toast.makeText(context, response.message.toString(), Toast.LENGTH_SHORT).show()
                 }
                 is NetworkResult.Loading -> {
@@ -50,6 +74,48 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes) {
         }
     }
 
+    // Loading the Cached data in case apiResponse throws an error, shows the last cached database
+    // asks for apiResponse to meet handleErrorMessage(apiResponse, database) parameters.
+    private fun loadDataFromCache(apiResponse: NetworkResult<Recipes>) {
+        Log.d("RecipesFragment", "loadDataFromCache() Called")
+        lifecycleScope.launchWhenStarted {
+            mainViewModel.readRecipes.observe(viewLifecycleOwner) { database ->
+                if (database.isNotEmpty()) {
+                    recipesAdapter.setNewData(database.first().recipes)
+                } else {
+                    handleErrorMessage(apiResponse, database)
+                }
+            }
+        }
+    }
+
+    // Handling the error message whenever ApiResponse/Database is Error/NullOrEmpty
+    private fun handleErrorMessage(apiResponse: NetworkResult<Recipes>, database: List<RecipesEntity>) {
+        Log.d("RecipesFragment", "handleErrorMessage() Called")
+        if (apiResponse is NetworkResult.Error && database.isNullOrEmpty()) {
+            binding.apply {
+                errorImageView.visibility = View.VISIBLE
+                errorTextView.visibility = View.VISIBLE
+                errorTextView.text = apiResponse.message.toString()
+            }
+        } else if (apiResponse is NetworkResult.Loading) {
+            binding.apply {
+                errorTextView.visibility = View.INVISIBLE
+                errorImageView.visibility = View.INVISIBLE
+            }
+        } else if (apiResponse is NetworkResult.Success) {
+            binding.apply {
+                errorTextView.visibility = View.INVISIBLE
+                errorImageView.visibility = View.INVISIBLE
+            }
+        }
+    }
+
+    private fun setupRecyclerView() {
+        binding.recyclerview.adapter = recipesAdapter
+        binding.recyclerview.layoutManager = LinearLayoutManager(requireContext())
+        showShimmerEffect()
+    }
 
     private fun showShimmerEffect() {
         binding.shimmerFrameLayout.startShimmer()
@@ -61,12 +127,6 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes) {
         binding.shimmerFrameLayout.stopShimmer()
         binding.shimmerFrameLayout.visibility = View.GONE
         binding.recyclerview.visibility = View.VISIBLE
-    }
-
-    private fun setupRecyclerView() {
-        binding.recyclerview.adapter = recipesAdapter
-        binding.recyclerview.layoutManager = LinearLayoutManager(requireContext())
-        showShimmerEffect()
     }
 
 }

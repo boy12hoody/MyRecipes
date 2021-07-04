@@ -2,22 +2,20 @@ package uz.boywonder.myrecipes.data.database
 
 import androidx.room.TypeConverter
 import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
-import uz.boywonder.myrecipes.models.Recipe
+import uz.boywonder.myrecipes.models.Recipes
 
 class RecipesTypeConverter {
 
     val moshi = Moshi.Builder().build()
-    val type = Types.newParameterizedType(List::class.java, Recipe::class.java)
-    val moshiAdapter = moshi.adapter<Recipe>(type)
+    val moshiAdapter = moshi.adapter(Recipes::class.java)
 
     @TypeConverter
-    fun recipeToString(recipe: Recipe) : String {
-        return moshiAdapter.toJson(recipe)
+    fun recipeToString(recipes: Recipes) : String {
+        return moshiAdapter.toJson(recipes)
     }
 
     @TypeConverter
-    fun stringToRecipe(string: String) : Recipe? {
+    fun stringToRecipe(string: String) : Recipes? {
         return moshiAdapter.fromJson(string)
     }
 
