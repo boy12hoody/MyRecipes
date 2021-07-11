@@ -8,4 +8,4 @@ import com.squareup.moshi.JsonClass
 data class Recipes(
     @Json(name = "results")
     val results: List<Result>
-)
+    )

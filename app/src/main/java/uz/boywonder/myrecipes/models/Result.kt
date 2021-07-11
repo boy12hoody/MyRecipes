@@ -7,33 +7,33 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class Result(
     @Json(name = "aggregateLikes")
-    val aggregateLikes: Int,
+    val aggregateLikes: Int? = null,
     @Json(name = "cheap")
-    val cheap: Boolean,
+    val cheap: Boolean = false,
     @Json(name = "dairyFree")
-    val dairyFree: Boolean,
+    val dairyFree: Boolean = false,
     @Json(name = "extendedIngredients")
-    val extendedIngredients: List<ExtendedIngredient>,
+    val extendedIngredients: List<ExtendedIngredient>? = null,
     @Json(name = "glutenFree")
-    val glutenFree: Boolean,
+    val glutenFree: Boolean = false,
     @Json(name = "id")
-    val id: Int,
+    val id: Int? = null,
     @Json(name = "image")
-    val image: String,
+    val image: String? = null,
     @Json(name = "readyInMinutes")
-    val readyInMinutes: Int,
+    val readyInMinutes: Int? = null,
     @Json(name = "sourceName")
-    val sourceName: String,
+    val sourceName: String? = null,
     @Json(name = "sourceUrl")
-    val sourceUrl: String,
+    val sourceUrl: String? = null,
     @Json(name = "summary")
-    val summary: String,
+    val summary: String? = null,
     @Json(name = "title")
-    val title: String,
+    val title: String? = null,
     @Json(name = "vegan")
-    val vegan: Boolean,
+    val vegan: Boolean = false,
     @Json(name = "vegetarian")
-    val vegetarian: Boolean,
+    val vegetarian: Boolean = false,
     @Json(name = "veryHealthy")
-    val veryHealthy: Boolean
+    val veryHealthy: Boolean = false,
 )

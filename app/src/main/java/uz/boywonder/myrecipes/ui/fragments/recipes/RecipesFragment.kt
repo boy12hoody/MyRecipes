@@ -8,6 +8,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import uz.boywonder.myrecipes.R
@@ -27,12 +29,17 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes) {
     private val recipesViewModel: RecipesViewModel by viewModels()
     private val binding: FragmentRecipesBinding by viewBinding()
     private val recipesAdapter by lazy { RecipesAdapter() }
+    private val args by navArgs<RecipesFragmentArgs>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
         readDatabase()
+
+        binding.recipesFab.setOnClickListener {
+            findNavController().navigate(R.id.action_recipesFragment_to_recipesBottomSheet)
+        }
 
     }
 
@@ -41,7 +48,7 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes) {
     private fun readDatabase() {
         lifecycleScope.launchWhenStarted {
             mainViewModel.readRecipes.observeOnce(viewLifecycleOwner) { database ->
-                if (database.isNotEmpty()) {
+                if (database.isNotEmpty() && !args.backFromBottomSheet) {
                     Log.d("RecipesFragment", "readDatabase() Called")
                     recipesAdapter.setNewData(database.first().recipes)
                     hideShimmerEffect()
@@ -90,7 +97,7 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes) {
     }
 
     // Handling the error message whenever ApiResponse/Database is Error/NullOrEmpty
-    private fun handleErrorMessage(apiResponse: NetworkResult<Recipes>, database: List<RecipesEntity>) {
+    private fun handleErrorMessage(apiResponse: NetworkResult<Recipes>?, database: List<RecipesEntity>?) {
         Log.d("RecipesFragment", "handleErrorMessage() Called")
         if (apiResponse is NetworkResult.Error && database.isNullOrEmpty()) {
             binding.apply {

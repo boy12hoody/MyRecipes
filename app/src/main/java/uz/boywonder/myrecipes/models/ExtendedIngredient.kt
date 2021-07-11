@@ -7,15 +7,15 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class ExtendedIngredient(
     @Json(name = "amount")
-    val amount: Double,
+    val amount: Double? = null,
     @Json(name = "consistency")
-    val consistency: String,
+    val consistency: String? = null,
     @Json(name = "image")
-    val image: String,
+    val image: String? = null,
     @Json(name = "name")
-    val name: String,
+    val name: String? = null,
     @Json(name = "original")
-    val original: String,
+    val original: String? = null,
     @Json(name = "unit")
-    val unit: String
+    val unit: String? = null
 )

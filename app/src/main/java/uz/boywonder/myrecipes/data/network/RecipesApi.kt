@@ -8,7 +8,7 @@ import uz.boywonder.myrecipes.models.Recipes
 interface RecipesApi {
 
     @GET("/recipes/complexSearch")
-    suspend fun getRepices(
+    suspend fun getRecipes(
         @QueryMap queries: Map<String, String>
     ) : Response<Recipes>
 }
