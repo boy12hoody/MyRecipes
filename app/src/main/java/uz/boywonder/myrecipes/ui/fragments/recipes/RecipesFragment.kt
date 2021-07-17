@@ -2,28 +2,37 @@ package uz.boywonder.myrecipes.ui.fragments.recipes
 
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.viewbinding.library.fragment.viewBinding
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import uz.boywonder.myrecipes.R
 import uz.boywonder.myrecipes.adapters.RecipesAdapter
 import uz.boywonder.myrecipes.data.database.RecipesEntity
 import uz.boywonder.myrecipes.databinding.FragmentRecipesBinding
 import uz.boywonder.myrecipes.models.Recipes
+import uz.boywonder.myrecipes.util.NetworkListener
 import uz.boywonder.myrecipes.util.NetworkResult
 import uz.boywonder.myrecipes.util.observeOnce
 import uz.boywonder.myrecipes.viewmodels.MainViewModel
 import uz.boywonder.myrecipes.viewmodels.RecipesViewModel
 
 @AndroidEntryPoint
-class RecipesFragment : Fragment(R.layout.fragment_recipes) {
+class RecipesFragment : Fragment(R.layout.fragment_recipes),
+    androidx.appcompat.widget.SearchView.OnQueryTextListener {
 
     private val mainViewModel: MainViewModel by viewModels()
     private val recipesViewModel: RecipesViewModel by viewModels()
@@ -31,11 +40,48 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes) {
     private val recipesAdapter by lazy { RecipesAdapter() }
     private val args by navArgs<RecipesFragmentArgs>()
 
+    private lateinit var networkListener: NetworkListener
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
-        readDatabase()
+
+        // Setup Action Menu
+        setHasOptionsMenu(true)
+
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                networkListener = NetworkListener()
+                networkListener.checkNetworkAvailability(requireContext()).collect { status ->
+                    Log.d("RecipesFragment: NetworkListener", status.toString())
+
+                    when (status) {
+
+                        true -> {
+                            if (recipesViewModel.isOffline) {
+                                Snackbar.make(
+                                    requireView(), "Back Online.", Snackbar.LENGTH_SHORT
+                                ).show()
+
+                                recipesViewModel.isOffline = false
+                            }
+                        }
+
+                        false -> {
+                            Snackbar.make(
+                                requireView(), "No Internet Connection.", Snackbar.LENGTH_SHORT
+                            ).show()
+
+                            recipesViewModel.isOffline = true
+                        }
+
+                    }
+                    // Every time network status changes, reads local database first
+                    readDatabase()
+                }
+            }
+        }
 
         binding.recipesFab.setOnClickListener {
             findNavController().navigate(R.id.action_recipesFragment_to_recipesBottomSheet)
@@ -46,14 +92,16 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes) {
     /* Because the query is hardcoded for now, it is ok to show the last cached data.
     TODO subject to change once query search is introduced */
     private fun readDatabase() {
-        lifecycleScope.launchWhenStarted {
-            mainViewModel.readRecipes.observeOnce(viewLifecycleOwner) { database ->
-                if (database.isNotEmpty() && !args.backFromBottomSheet) {
-                    Log.d("RecipesFragment", "readDatabase() Called")
-                    recipesAdapter.setNewData(database.first().recipes)
-                    hideShimmerEffect()
-                } else {
-                    requestApiData()
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mainViewModel.readRecipes.observeOnce(viewLifecycleOwner) { database ->
+                    if (database.isNotEmpty() && !args.backFromBottomSheet) {
+                        Log.d("RecipesFragment", "readDatabase() Called")
+                        recipesAdapter.setNewData(database.first().recipes)
+                        hideShimmerEffect()
+                    } else {
+                        requestApiData()
+                    }
                 }
             }
         }
@@ -81,16 +129,42 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes) {
         }
     }
 
+    private fun searchApiData(searchQuery: String) {
+        Log.d("RecipesFragment", "searchApiData() Called")
+        showShimmerEffect()
+        mainViewModel.searchRecipes(recipesViewModel.searchQueries(searchQuery))
+        mainViewModel.searchRecipesResponse.observe(viewLifecycleOwner) { response ->
+            when (response) {
+                is NetworkResult.Success -> {
+                    hideShimmerEffect()
+                    val recipes = response.data
+                    recipes?.let { recipesAdapter.setNewData(it) }
+                }
+                is NetworkResult.Error -> {
+                    hideShimmerEffect()
+                    loadDataFromCache(response)
+                    Snackbar.make(requireView(), response.message.toString(), Snackbar.LENGTH_SHORT)
+                        .show()
+                }
+                is NetworkResult.Loading -> {
+                    showShimmerEffect()
+                }
+            }
+        }
+    }
+
     // Loading the Cached data in case apiResponse throws an error, shows the last cached database
     // asks for apiResponse to meet handleErrorMessage(apiResponse, database) parameters.
     private fun loadDataFromCache(apiResponse: NetworkResult<Recipes>) {
         Log.d("RecipesFragment", "loadDataFromCache() Called")
-        lifecycleScope.launchWhenStarted {
-            mainViewModel.readRecipes.observe(viewLifecycleOwner) { database ->
-                if (database.isNotEmpty()) {
-                    recipesAdapter.setNewData(database.first().recipes)
-                } else {
-                    handleErrorMessage(apiResponse, database)
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mainViewModel.readRecipes.observe(viewLifecycleOwner) { database ->
+                    if (database.isNotEmpty()) {
+                        recipesAdapter.setNewData(database.first().recipes)
+                    } else {
+                        handleErrorMessage(apiResponse, database)
+                    }
                 }
             }
         }
@@ -116,6 +190,27 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes) {
                 errorImageView.visibility = View.INVISIBLE
             }
         }
+    }
+
+    // Action Menu
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.recipes_action_menu, menu)
+        val actionSearch = menu.findItem(R.id.action_search)
+        val searchView = actionSearch.actionView as? androidx.appcompat.widget.SearchView
+        searchView?.isSubmitButtonEnabled = true
+        searchView?.setOnQueryTextListener(this)
+    }
+
+    // Action Menu SearchView Submit
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        if (!query.isNullOrBlank()) {
+            searchApiData(query)
+        }
+        return true
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        return true
     }
 
     private fun setupRecyclerView() {

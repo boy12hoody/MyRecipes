@@ -33,9 +33,14 @@ class MainViewModel @Inject constructor(
     /* RETROFIT */
     // response data in the form of LiveData
     var recipesResponse: MutableLiveData<NetworkResult<Recipes>> = MutableLiveData()
+    var searchRecipesResponse: MutableLiveData<NetworkResult<Recipes>> = MutableLiveData()
 
     fun getRecipes(queries: Map<String, String>) = viewModelScope.launch {
         getRecipesSafeCall(queries)
+    }
+
+    fun searchRecipes(searchQuery: Map<String, String>) = viewModelScope.launch {
+        searchRecipesSafeCall(searchQuery)
     }
 
     // get results with internet connection checks covered
@@ -67,6 +72,24 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    private suspend fun searchRecipesSafeCall(searchQuery: Map<String, String>) {
+        searchRecipesResponse.value = NetworkResult.Loading()
+
+        if (hasInternetConnection()) {
+            try {
+                val response = repository.remote.searchRecipes(searchQuery)
+                searchRecipesResponse.value = handleRecipeResponse(response)
+
+            } catch (e: Exception) {
+                searchRecipesResponse.value = NetworkResult.Error("Recipes not found.")
+                Log.e("RecipesViewModel", e.message.toString())
+            }
+        } else {
+            searchRecipesResponse.value = NetworkResult.Error("No Internet Connection.")
+        }
+    }
+
+    // Offline Caching Function that takes Recipes model class object and inserts into ROOM
     private fun offlineCacheRecipes(recipes: Recipes) {
         val recipesEntity = RecipesEntity(recipes)
         insertRecipes(recipesEntity)
