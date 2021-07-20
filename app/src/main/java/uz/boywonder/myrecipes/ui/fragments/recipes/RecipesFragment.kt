@@ -24,6 +24,7 @@ import uz.boywonder.myrecipes.adapters.RecipesAdapter
 import uz.boywonder.myrecipes.data.database.RecipesEntity
 import uz.boywonder.myrecipes.databinding.FragmentRecipesBinding
 import uz.boywonder.myrecipes.models.Recipes
+import uz.boywonder.myrecipes.models.Result
 import uz.boywonder.myrecipes.util.NetworkListener
 import uz.boywonder.myrecipes.util.NetworkResult
 import uz.boywonder.myrecipes.util.observeOnce
@@ -32,12 +33,12 @@ import uz.boywonder.myrecipes.viewmodels.RecipesViewModel
 
 @AndroidEntryPoint
 class RecipesFragment : Fragment(R.layout.fragment_recipes),
-    androidx.appcompat.widget.SearchView.OnQueryTextListener {
+    androidx.appcompat.widget.SearchView.OnQueryTextListener, RecipesAdapter.OnItemClickListener {
 
     private val mainViewModel: MainViewModel by viewModels()
     private val recipesViewModel: RecipesViewModel by viewModels()
     private val binding: FragmentRecipesBinding by viewBinding()
-    private val recipesAdapter by lazy { RecipesAdapter() }
+    private val recipesAdapter by lazy { RecipesAdapter(this) }
     private val args by navArgs<RecipesFragmentArgs>()
 
     private lateinit var networkListener: NetworkListener
@@ -211,6 +212,12 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes),
 
     override fun onQueryTextChange(newText: String?): Boolean {
         return true
+    }
+
+    // Handle the click on Recipe Item
+    override fun onItemClick(result: Result) {
+        val action = RecipesFragmentDirections.actionRecipesFragmentToDetailsActivity(result)
+        findNavController().navigate(action)
     }
 
     private fun setupRecyclerView() {

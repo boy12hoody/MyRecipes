@@ -1,9 +1,13 @@
 package uz.boywonder.myrecipes.models
 
 
+import android.os.Parcelable
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 
+@Parcelize
 @JsonClass(generateAdapter = true)
 data class Result(
     @Json(name = "aggregateLikes")
@@ -13,7 +17,7 @@ data class Result(
     @Json(name = "dairyFree")
     val dairyFree: Boolean = false,
     @Json(name = "extendedIngredients")
-    val extendedIngredients: List<ExtendedIngredient>? = null,
+    val extendedIngredients: @RawValue List<ExtendedIngredient>? = null,
     @Json(name = "glutenFree")
     val glutenFree: Boolean = false,
     @Json(name = "id")
@@ -36,4 +40,4 @@ data class Result(
     val vegetarian: Boolean = false,
     @Json(name = "veryHealthy")
     val veryHealthy: Boolean = false,
-)
+) : Parcelable

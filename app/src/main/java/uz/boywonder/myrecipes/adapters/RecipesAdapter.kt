@@ -12,12 +12,24 @@ import uz.boywonder.myrecipes.models.Recipes
 import uz.boywonder.myrecipes.models.Result
 import uz.boywonder.myrecipes.util.RecipesDiffUtil
 
-class RecipesAdapter : RecyclerView.Adapter<RecipesAdapter.MyViewHolder>() {
+class RecipesAdapter(
+    private val listener: OnItemClickListener
+) : RecyclerView.Adapter<RecipesAdapter.MyViewHolder>() {
 
     private var recipes = emptyList<Result>()
 
-    class MyViewHolder(private val binding: RecipesRowLayoutBinding) :
+    inner class MyViewHolder(private val binding: RecipesRowLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.root.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val item = recipes[position]
+                    listener.onItemClick(item)
+                }
+            }
+        }
 
         fun bind(result: Result) {
 
@@ -34,12 +46,26 @@ class RecipesAdapter : RecyclerView.Adapter<RecipesAdapter.MyViewHolder>() {
                 }
 
                 if (result.vegan) {
-                    leafImageView.setColorFilter(ContextCompat.getColor(leafImageView.context, R.color.green))
-                    leafTextView.setTextColor(ContextCompat.getColor(leafTextView.context, R.color.green))
+                    leafImageView.setColorFilter(
+                        ContextCompat.getColor(
+                            leafImageView.context,
+                            R.color.green
+                        )
+                    )
+                    leafTextView.setTextColor(
+                        ContextCompat.getColor(
+                            leafTextView.context,
+                            R.color.green
+                        )
+                    )
                 }
 
             }
         }
+    }
+
+    interface OnItemClickListener {
+        fun onItemClick(result: Result)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
