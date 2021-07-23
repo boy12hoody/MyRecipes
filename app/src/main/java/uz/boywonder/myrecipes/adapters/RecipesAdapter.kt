@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import org.jsoup.Jsoup
 import uz.boywonder.myrecipes.R
 import uz.boywonder.myrecipes.databinding.RecipesRowLayoutBinding
 import uz.boywonder.myrecipes.models.Recipes
@@ -37,7 +38,12 @@ class RecipesAdapter(
             binding.apply {
 
                 titleTextView.text = result.title
-                descriptionTextView.text = result.summary
+                descriptionTextView.apply {
+                    if (result.summary != null) {
+                        val desc = Jsoup.parse(result.summary).text()
+                        text = desc.toString()
+                    }
+                }
                 heartTextView.text = result.aggregateLikes.toString()
                 clockTextView.text = result.readyInMinutes.toString()
                 recipeImageView.load(result.image) {

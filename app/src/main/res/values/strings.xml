@@ -32,5 +32,11 @@
     <string name="diet_type">Diet Type</string>
     <string name="apply">Apply</string>
     <string name="search">Search</string>
+    <string name="healthy">Healthy</string>
+    <string name="dairy_free">Dairy Free</string>
+    <string name="likes">Likes</string>
+    <string name="time">Time</string>
+    <string name="main_image">Main Image</string>
+    <string name="cheap">Cheap</string>
 
 </resources>
