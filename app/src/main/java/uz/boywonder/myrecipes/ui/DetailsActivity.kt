@@ -14,6 +14,7 @@ import uz.boywonder.myrecipes.databinding.ActivityDetailsBinding
 import uz.boywonder.myrecipes.ui.fragments.ingredients.IngredientsFragment
 import uz.boywonder.myrecipes.ui.fragments.instructions.InstructionsFragment
 import uz.boywonder.myrecipes.ui.fragments.overview.OverviewFragment
+import uz.boywonder.myrecipes.util.Constants.Companion.RECIPE_RESULT_KEY
 
 class DetailsActivity : AppCompatActivity() {
 
@@ -38,7 +39,7 @@ class DetailsActivity : AppCompatActivity() {
         titles.add("Instructions")
 
         val resultBundle = Bundle()
-        resultBundle.putParcelable("recipeBundle", args.result)
+        resultBundle.putParcelable(RECIPE_RESULT_KEY, args.result)
 
         val pagerAdapter = PagerAdapter(resultBundle, fragments, this)
 

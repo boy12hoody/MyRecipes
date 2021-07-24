@@ -1,9 +1,8 @@
 package uz.boywonder.myrecipes.ui.fragments.overview
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import android.viewbinding.library.fragment.viewBinding
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -13,22 +12,17 @@ import org.jsoup.Jsoup
 import uz.boywonder.myrecipes.R
 import uz.boywonder.myrecipes.databinding.FragmentOverviewBinding
 import uz.boywonder.myrecipes.models.Result
+import uz.boywonder.myrecipes.util.Constants.Companion.RECIPE_RESULT_KEY
 
-class OverviewFragment : Fragment() {
+class OverviewFragment : Fragment(R.layout.fragment_overview) {
 
-    private var _binding: FragmentOverviewBinding? = null
-    private val binding: FragmentOverviewBinding get() = _binding!!
+    private val binding: FragmentOverviewBinding by viewBinding()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-
-        _binding = FragmentOverviewBinding.inflate(inflater, container, false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         val args = arguments
-        val myBundle: Result = args!!.getParcelable<Result>("recipeBundle") as Result
+        val myBundle: Result = args!!.getParcelable<Result>(RECIPE_RESULT_KEY) as Result
 
         binding.apply {
             mainImageView.load(myBundle.image)
@@ -49,8 +43,6 @@ class OverviewFragment : Fragment() {
             updateColors(myBundle.veryHealthy, healthyTextView, healthyImageView)
             updateColors(myBundle.cheap, cheapTextView, cheapImageView)
         }
-
-        return binding.root
     }
 
     private fun updateColors(stateIsTrue: Boolean, textView: TextView, imageView: ImageView) {
@@ -60,8 +52,4 @@ class OverviewFragment : Fragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
 }
