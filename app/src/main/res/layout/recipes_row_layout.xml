@@ -34,7 +34,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:srcCompat="@tools:sample/avatars" />
+                tools:srcCompat="@tools:sample/avatars"
+                android:contentDescription="@string/recipe_image" />
 
             <TextView
                 android:id="@+id/title_textView"
@@ -72,9 +73,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="36dp"
+                android:contentDescription="@string/number_of_likes"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/heart_textView"
-                app:layout_constraintStart_toStartOf="@+id/heart_textView"
+                app:layout_constraintStart_toStartOf="@+id/description_textView"
                 app:layout_constraintTop_toBottomOf="@+id/description_textView"
                 app:srcCompat="@drawable/ic_heart"
                 app:tint="@color/red" />
@@ -83,11 +84,12 @@
                 android:id="@+id/heart_textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{String.valueOf(result.aggregateLikes)}"
                 android:textAlignment="center"
                 android:textColor="@color/red"
-                app:layout_constraintStart_toStartOf="@+id/description_textView"
-                app:layout_constraintTop_toBottomOf="@+id/heart_imageView" />
+                app:layout_constraintEnd_toEndOf="@+id/heart_imageView"
+                app:layout_constraintStart_toStartOf="@+id/heart_imageView"
+                app:layout_constraintTop_toBottomOf="@+id/heart_imageView"
+                tools:text="160" />
 
             <ImageView
                 android:id="@+id/clock_imageView"
@@ -97,13 +99,15 @@
                 app:layout_constraintStart_toStartOf="@+id/clock_textView"
                 app:layout_constraintTop_toTopOf="@+id/heart_imageView"
                 app:srcCompat="@drawable/ic_clock"
-                app:tint="@color/yellow" />
+                app:tint="@color/yellow"
+                android:contentDescription="@string/time_needed" />
 
             <TextView
                 android:id="@+id/clock_textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
+                tools:text="5"
                 android:textAlignment="center"
                 android:textColor="@color/yellow"
                 app:layout_constraintStart_toEndOf="@+id/heart_textView"
@@ -116,14 +120,15 @@
                 app:layout_constraintEnd_toEndOf="@+id/leaf_textView"
                 app:layout_constraintStart_toStartOf="@+id/leaf_textView"
                 app:layout_constraintTop_toTopOf="@+id/clock_imageView"
-                app:srcCompat="@drawable/ic_leaf" />
+                app:srcCompat="@drawable/ic_leaf"
+                android:contentDescription="@string/vegan" />
 
             <TextView
                 android:id="@+id/leaf_textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:text="Vegan"
+                android:text="@string/vegan"
                 android:textAlignment="center"
                 app:layout_constraintStart_toEndOf="@+id/clock_textView"
                 app:layout_constraintTop_toBottomOf="@+id/leaf_imageView" />

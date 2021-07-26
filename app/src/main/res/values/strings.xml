@@ -39,5 +39,8 @@
     <string name="main_image">Main Image</string>
     <string name="cheap">Cheap</string>
     <string name="ingredient_image">Ingredient Image</string>
+    <string name="time_needed">Time Needed</string>
+    <string name="number_of_likes">Number Of Likes</string>
+    <string name="recipe_image">Recipe Image</string>
 
 </resources>
