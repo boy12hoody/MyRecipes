@@ -35,6 +35,8 @@ class DetailsActivity : AppCompatActivity() {
     private var recipeId = 0
     private var isRecipeSaved = false
 
+    private lateinit var addToFavMenuItem: MenuItem
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -72,7 +74,7 @@ class DetailsActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.details_action_menu, menu)
-        val addToFavMenuItem = menu!!.findItem(R.id.action_save_to_favorites)
+        addToFavMenuItem = menu!!.findItem(R.id.action_save_to_favorites)
         checkFavSavedRecipe(addToFavMenuItem)
         return true
     }
@@ -96,13 +98,13 @@ class DetailsActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun checkFavSavedRecipe(addToFavMenuItem: MenuItem) {
+    private fun checkFavSavedRecipe(menuItem: MenuItem) {
         mainViewModel.readFavoriteRecipes.observe(this) { favoriteEntities ->
             try {
                 for (entity in favoriteEntities) {
                     if (entity.result.id == args.result.id) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            changeMenuItemColor(addToFavMenuItem, R.color.yellow)
+                            changeMenuItemColor(menuItem, R.color.yellow)
                         }
                         recipeId = entity.id
                         isRecipeSaved = true
@@ -144,5 +146,12 @@ class DetailsActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun changeMenuItemColor(item: MenuItem, color: Int) {
         item.iconTintList = ContextCompat.getColorStateList(this, color)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            changeMenuItemColor(addToFavMenuItem, R.color.white)
+        }
     }
 }

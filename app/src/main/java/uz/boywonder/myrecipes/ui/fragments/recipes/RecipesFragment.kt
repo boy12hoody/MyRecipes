@@ -61,7 +61,7 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes),
                         if (recipesViewModel.isOffline) {
                             Snackbar.make(
                                 requireView(), "Back Online.", Snackbar.LENGTH_SHORT
-                            ).show()
+                            ).setAction("Okay") {}.show()
 
                             recipesViewModel.isOffline = false
                         }
@@ -70,7 +70,7 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes),
                     false -> {
                         Snackbar.make(
                             requireView(), "No Internet Connection.", Snackbar.LENGTH_SHORT
-                        ).show()
+                        ).setAction("Okay") {}.show()
 
                         recipesViewModel.isOffline = true
                     }
