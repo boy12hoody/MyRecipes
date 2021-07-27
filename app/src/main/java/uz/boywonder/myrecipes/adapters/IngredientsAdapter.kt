@@ -9,7 +9,7 @@ import uz.boywonder.myrecipes.R
 import uz.boywonder.myrecipes.databinding.IngredientsRowLayoutBinding
 import uz.boywonder.myrecipes.models.ExtendedIngredient
 import uz.boywonder.myrecipes.util.Constants.Companion.BASE_IMAGE_URL
-import uz.boywonder.myrecipes.util.RecipesDiffUtil
+import uz.boywonder.myrecipes.util.MyDiffUtil
 
 class IngredientsAdapter() : RecyclerView.Adapter<IngredientsAdapter.MyViewHolder>() {
 
@@ -50,7 +50,7 @@ class IngredientsAdapter() : RecyclerView.Adapter<IngredientsAdapter.MyViewHolde
     }
 
     fun setNewData(newIngredientsList: List<ExtendedIngredient>) {
-        val diffUtil = RecipesDiffUtil(ingredientsList, newIngredientsList)
+        val diffUtil = MyDiffUtil(ingredientsList, newIngredientsList)
         val diffUtilResult = DiffUtil.calculateDiff(diffUtil)
         ingredientsList = newIngredientsList
         diffUtilResult.dispatchUpdatesTo(this)

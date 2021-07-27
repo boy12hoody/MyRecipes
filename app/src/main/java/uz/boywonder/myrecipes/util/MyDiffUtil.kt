@@ -2,7 +2,7 @@ package uz.boywonder.myrecipes.util
 
 import androidx.recyclerview.widget.DiffUtil
 
-class RecipesDiffUtil<T>(
+class MyDiffUtil<T>(
     private val oldList: List<T>,
     private val newList: List<T>
 ) : DiffUtil.Callback() {

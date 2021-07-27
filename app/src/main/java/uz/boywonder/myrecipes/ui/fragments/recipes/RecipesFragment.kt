@@ -158,7 +158,6 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes),
     private fun loadDataFromCache(apiResponse: NetworkResult<Recipes>) {
         Log.d("RecipesFragment", "loadDataFromCache() Called")
         lifecycleScope.launch {
-//            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 mainViewModel.readRecipes.observe(viewLifecycleOwner) { database ->
                     if (database.isNotEmpty()) {
                         recipesAdapter.setNewData(database.first().recipes)
@@ -166,7 +165,6 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes),
                         handleErrorMessage(apiResponse, database)
                     }
                 }
-//            }
         }
     }
 
@@ -220,21 +218,29 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes),
     }
 
     private fun setupRecyclerView() {
-        binding.recyclerview.adapter = recipesAdapter
-        binding.recyclerview.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerview.apply {
+            adapter = recipesAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+        }
         showShimmerEffect()
     }
 
     private fun showShimmerEffect() {
-        binding.shimmerFrameLayout.startShimmer()
-        binding.shimmerFrameLayout.visibility = View.VISIBLE
-        binding.recyclerview.visibility = View.GONE
+        binding.apply {
+            shimmerFrameLayout.startShimmer()
+            shimmerFrameLayout.visibility = View.VISIBLE
+            recyclerview.visibility = View.GONE
+        }
+
     }
 
     private fun hideShimmerEffect() {
-        binding.shimmerFrameLayout.stopShimmer()
-        binding.shimmerFrameLayout.visibility = View.GONE
-        binding.recyclerview.visibility = View.VISIBLE
+        binding.apply {
+            shimmerFrameLayout.stopShimmer()
+            shimmerFrameLayout.visibility = View.GONE
+            recyclerview.visibility = View.VISIBLE
+        }
+
     }
 
 }

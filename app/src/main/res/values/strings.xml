@@ -43,5 +43,6 @@
     <string name="number_of_likes">Number Of Likes</string>
     <string name="recipe_image">Recipe Image</string>
     <string name="save_to_favorites">Save to Favorites</string>
+    <string name="no_favorite_recipes_found">No Favorite Recipes Found</string>
 
 </resources>

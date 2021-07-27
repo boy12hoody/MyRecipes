@@ -8,50 +8,36 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import org.jsoup.Jsoup
 import uz.boywonder.myrecipes.R
+import uz.boywonder.myrecipes.data.database.entities.FavoriteEntity
 import uz.boywonder.myrecipes.databinding.RecipesRowLayoutBinding
-import uz.boywonder.myrecipes.models.Recipes
-import uz.boywonder.myrecipes.models.Result
 import uz.boywonder.myrecipes.util.MyDiffUtil
 
-class RecipesAdapter(
-    private val listener: OnItemClickListener
-) : RecyclerView.Adapter<RecipesAdapter.MyViewHolder>() {
+class FavoriteRecipesAdapter() : RecyclerView.Adapter<FavoriteRecipesAdapter.MyViewHolder>() {
 
-    private var recipes = emptyList<Result>()
+    private var favoriteRecipes = emptyList<FavoriteEntity>()
 
     inner class MyViewHolder(private val binding: RecipesRowLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        init {
-            binding.root.setOnClickListener {
-                val position = bindingAdapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    val item = recipes[position]
-                    listener.onItemClick(item)
-                }
-            }
-        }
-
-        fun bind(result: Result) {
-
-            // here we bind Result elements values to UI elements values
+        fun bind(favoriteEntity: FavoriteEntity) {
             binding.apply {
 
-                titleTextView.text = result.title
+                titleTextView.text = favoriteEntity.result.title
                 descriptionTextView.apply {
-                    if (result.summary != null) {
-                        val desc = Jsoup.parse(result.summary).text()
+                    if (favoriteEntity.result.summary != null) {
+                        val desc = Jsoup.parse(favoriteEntity.result.summary!!).text()
                         text = desc.toString()
                     }
                 }
-                heartTextView.text = result.aggregateLikes.toString()
-                clockTextView.text = result.readyInMinutes.toString()
-                recipeImageView.load(result.image) {
+
+                heartTextView.text = favoriteEntity.result.aggregateLikes.toString()
+                clockTextView.text = favoriteEntity.result.readyInMinutes.toString()
+                recipeImageView.load(favoriteEntity.result.image) {
                     crossfade(600)
                     error(R.drawable.ic_error_image)
                 }
 
-                if (result.vegan) {
+                if (favoriteEntity.result.vegan) {
                     leafImageView.setColorFilter(
                         ContextCompat.getColor(
                             leafImageView.context,
@@ -70,10 +56,6 @@ class RecipesAdapter(
         }
     }
 
-    interface OnItemClickListener {
-        fun onItemClick(result: Result)
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val binding =
             RecipesRowLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -81,20 +63,18 @@ class RecipesAdapter(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val currentResult = recipes[position]
-        holder.bind(currentResult)
+        val currentFavoriteRecipe = favoriteRecipes[position]
+        holder.bind(currentFavoriteRecipe)
     }
 
     override fun getItemCount(): Int {
-        return recipes.size
+        return favoriteRecipes.size
     }
 
-    // To check the updated data with older one to improve performance and accuracy of the app
-    fun setNewData(newData: Recipes) {
-        val diffUtil = MyDiffUtil(recipes, newData.results)
+    fun setNewData(newData: List<FavoriteEntity>) {
+        val diffUtil = MyDiffUtil(favoriteRecipes, newData)
         val diffUtilResult = DiffUtil.calculateDiff(diffUtil)
-        recipes = newData.results
+        favoriteRecipes = newData
         diffUtilResult.dispatchUpdatesTo(this)
     }
-
 }
