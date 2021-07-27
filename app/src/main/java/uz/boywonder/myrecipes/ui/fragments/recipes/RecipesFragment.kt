@@ -9,9 +9,7 @@ import android.viewbinding.library.fragment.viewBinding
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,7 +19,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import uz.boywonder.myrecipes.R
 import uz.boywonder.myrecipes.adapters.RecipesAdapter
-import uz.boywonder.myrecipes.data.database.RecipesEntity
+import uz.boywonder.myrecipes.data.database.entities.RecipesEntity
 import uz.boywonder.myrecipes.databinding.FragmentRecipesBinding
 import uz.boywonder.myrecipes.models.Recipes
 import uz.boywonder.myrecipes.models.Result
@@ -51,37 +49,37 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes),
         // Setup Action Menu
         setHasOptionsMenu(true)
 
-        lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                networkListener = NetworkListener()
-                networkListener.checkNetworkAvailability(requireContext()).collect { status ->
-                    Log.d("RecipesFragment: NetworkListener", status.toString())
+        lifecycleScope.launchWhenStarted {
 
-                    when (status) {
+            networkListener = NetworkListener()
+            networkListener.checkNetworkAvailability(requireContext()).collect { status ->
+                Log.d("RecipesFragment: NetworkListener", status.toString())
 
-                        true -> {
-                            if (recipesViewModel.isOffline) {
-                                Snackbar.make(
-                                    requireView(), "Back Online.", Snackbar.LENGTH_SHORT
-                                ).show()
+                when (status) {
 
-                                recipesViewModel.isOffline = false
-                            }
-                        }
-
-                        false -> {
+                    true -> {
+                        if (recipesViewModel.isOffline) {
                             Snackbar.make(
-                                requireView(), "No Internet Connection.", Snackbar.LENGTH_SHORT
+                                requireView(), "Back Online.", Snackbar.LENGTH_SHORT
                             ).show()
 
-                            recipesViewModel.isOffline = true
+                            recipesViewModel.isOffline = false
                         }
-
                     }
-                    // Every time network status changes, reads local database first
-                    readDatabase()
+
+                    false -> {
+                        Snackbar.make(
+                            requireView(), "No Internet Connection.", Snackbar.LENGTH_SHORT
+                        ).show()
+
+                        recipesViewModel.isOffline = true
+                    }
+
                 }
+                // Every time network status changes, reads local database first
+                readDatabase()
             }
+
         }
 
         binding.recipesFab.setOnClickListener {
@@ -90,21 +88,22 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes),
 
     }
 
-    /* Because the query is hardcoded for now, it is ok to show the last cached data.
-    TODO subject to change once query search is introduced */
+
     private fun readDatabase() {
         lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                mainViewModel.readRecipes.observeOnce(viewLifecycleOwner) { database ->
-                    if (database.isNotEmpty() && !args.backFromBottomSheet) {
-                        Log.d("RecipesFragment", "readDatabase() Called")
-                        recipesAdapter.setNewData(database.first().recipes)
-                        hideShimmerEffect()
-                    } else {
-                        requestApiData()
-                    }
+            mainViewModel.readRecipes.observeOnce(viewLifecycleOwner, { database ->
+                if (database.isNotEmpty() && !args.backFromBottomSheet) {
+                    Log.d("RecipesFragment", "readDatabase() Called")
+                    recipesAdapter.setNewData(database.first().recipes)
+                    hideShimmerEffect()
+                } else {
+                    Log.d(
+                        "RecipesFragment: backFromBottomSheet",
+                        args.backFromBottomSheet.toString()
+                    )
+                    requestApiData()
                 }
-            }
+            })
         }
     }
 
@@ -159,7 +158,7 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes),
     private fun loadDataFromCache(apiResponse: NetworkResult<Recipes>) {
         Log.d("RecipesFragment", "loadDataFromCache() Called")
         lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+//            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 mainViewModel.readRecipes.observe(viewLifecycleOwner) { database ->
                     if (database.isNotEmpty()) {
                         recipesAdapter.setNewData(database.first().recipes)
@@ -167,7 +166,7 @@ class RecipesFragment : Fragment(R.layout.fragment_recipes),
                         handleErrorMessage(apiResponse, database)
                     }
                 }
-            }
+//            }
         }
     }
 

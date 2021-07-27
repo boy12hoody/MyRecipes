@@ -11,7 +11,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import uz.boywonder.myrecipes.data.Repository
-import uz.boywonder.myrecipes.data.database.RecipesEntity
+import uz.boywonder.myrecipes.data.database.entities.FavoriteEntity
+import uz.boywonder.myrecipes.data.database.entities.RecipesEntity
 import uz.boywonder.myrecipes.models.Recipes
 import uz.boywonder.myrecipes.util.NetworkResult
 import javax.inject.Inject
@@ -23,14 +24,36 @@ class MainViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
     /* ROOM DATABASE */
-    // read local database for recipes list
-    var readRecipes: LiveData<List<RecipesEntity>> = repository.local.readDatabase().asLiveData()
 
-    private fun insertRecipes(recipesEntity: RecipesEntity) = viewModelScope.launch(Dispatchers.IO) {
-        repository.local.insertRecipes(recipesEntity)
-    }
+    val readRecipes: LiveData<List<RecipesEntity>> =
+        repository.local.readRecipes().asLiveData()
+
+    val readFavoriteRecipes: LiveData<List<FavoriteEntity>> =
+        repository.local.readFavoriteRecipe().asLiveData()
+
+    private fun insertRecipes(recipesEntity: RecipesEntity) =
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.local.insertRecipes(recipesEntity)
+        }
+
+    fun insertFavoriteRecipe(favoriteEntity: FavoriteEntity) =
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.local.insertFavoriteRecipe(favoriteEntity)
+        }
+
+    fun deleteFavoriteRecipe(favoriteEntity: FavoriteEntity) =
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.local.deleteFavoriteRecipe(favoriteEntity)
+        }
+
+    fun deleteAllFavoriteRecipes() =
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.local.deleteAllFavoriteRecipes()
+        }
+
 
     /* RETROFIT */
+
     // response data in the form of LiveData
     var recipesResponse: MutableLiveData<NetworkResult<Recipes>> = MutableLiveData()
     var searchRecipesResponse: MutableLiveData<NetworkResult<Recipes>> = MutableLiveData()
