@@ -43,7 +43,7 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.core:core-ktx:1.6.0'
     implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     testImplementation 'junit:junit:4.13.2'
@@ -51,8 +51,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     // Chucker - OkHttp Interceptor
-    debugImplementation "com.github.chuckerteam.chucker:library:3.5.0"
-    releaseImplementation "com.github.chuckerteam.chucker:library-no-op:3.5.0"
+    debugImplementation 'com.github.chuckerteam.chucker:library:3.5.2'
+    releaseImplementation 'com.github.chuckerteam.chucker:library-no-op:3.5.2'
 
     // Material Components
     implementation 'com.google.android.material:material:1.4.0'
@@ -81,8 +81,8 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
 
     // Dagger - Hilt
-    implementation 'com.google.dagger:hilt-android:2.38'
-    kapt 'com.google.dagger:hilt-android-compiler:2.38'
+    implementation 'com.google.dagger:hilt-android:2.38.1'
+    kapt 'com.google.dagger:hilt-android-compiler:2.38.1'
 
     // Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
@@ -94,7 +94,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.0-alpha02"
 
     // Image Loading library Coil
-    implementation 'io.coil-kt:coil:1.3.0'
+    implementation 'io.coil-kt:coil:1.3.1'
 
     // Moshi + Codegen
     implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
