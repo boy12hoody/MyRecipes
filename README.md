@@ -11,7 +11,7 @@ The project uses latest methods and best practices as much as possible from arch
   <a href="https://developer.android.com/studio/releases/gradle-plugin#7-0-0"><img alt="Gradle Version" src="https://img.shields.io/badge/Gradle-7.0.0-yellowgreen.svg?style=flat&logo=gradle"/></a>
   <a href="https://android-arsenal.com/api?level=24"><img alt="API" src="https://img.shields.io/badge/API-24%2B-brightgreen.svg?style=flat"/></a>
   <a href="https://github.com/boy12hoody/MyRecipes/actions/workflows/android.yml"><img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/boy12hoody/MyRecipes/Build%20&%20Publish%20Debug%20APK"></a>
-  <a href="https://github.com/boy12hoody/MyRecipes/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/boy12hoody/MyRecipes"></a>
+  <a href="https://github.com/boy12hoody/MyRecipes/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/boy12hoody/MyRecipes?style=flat"></a>
   <a href="https://t.me/boywonder"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@BoyWonder-blue.svg?style=flat&logo=telegram"/></a>
 </p>
 
