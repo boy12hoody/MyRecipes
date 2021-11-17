@@ -25,7 +25,7 @@ The project uses latest methods and best practices as much as possible from arch
 </p>
 
 ## Status
-The project is currently **under development**: Splash Screen, Motion Layout, Dark Mode and many more yet to come..
+No further development.
 
 ## Download
 Go to the [Releases](https://github.com/boy12hoody/MyRecipes/releases) to download the latest APK (Demo Api Key included).
